@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英語脳トレーニング</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface2: #f0ede6;
+  --border: #e0dbd0;
+  --text: #1a1814;
+  --text2: #6b6558;
+  --text3: #9e9588;
+  --accent: #2d5a3d;
+  --accent-bg: #e8f0eb;
+  --accent2: #8b5e3c;
+  --accent2-bg: #f5ede5;
+  --info: #1e4a8a;
+  --info-bg: #e8eef8;
+  --warn: #7a4f00;
+  --warn-bg: #fff3d6;
+  --success: #1a5c2e;
+  --success-bg: #e6f4eb;
+  --danger: #8b1f1f;
+  --danger-bg: #fde8e8;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* API Key Screen */
+#apiscreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.api-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  max-width: 440px;
+  width: 100%;
+}
+.api-card h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.api-card p {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+.api-card input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: monospace;
+  margin-bottom: 10px;
+  background: var(--bg);
+}
+.api-card input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.api-note {
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.6;
+}
+
+/* Main App */
+#appscreen { display: none; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.topbar-day {
+  font-size: 12px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* Progress */
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+.progress-label {
+  font-size: 12px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+/* Tabs */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 1.5rem;
+}
+.tab {
+  padding: 10px 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text2);
+  transition: all 0.15s;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.tab:hover { background: var(--surface2); }
+.tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+.tab.active {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 500;
+}
+.tab.done {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+.card-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+/* Sentence display */
+.sentence-en {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.sentence-jp {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+  min-height: 22px;
+  transition: filter 0.4s;
+}
+.sentence-jp.blurred {
+  filter: blur(6px);
+  cursor: pointer;
+  user-select: none;
+}
+.reveal-hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+/* SVO */
+.svo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.svo-item {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+  text-align: center;
+}
+.svo-lbl { font-size: 10px; color: var(--text3); display: block; margin-bottom: 4px; }
+.svo-val { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); }
+
+/* Voice panel */
+.voice-panel {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin: 14px 0;
+}
+.voice-panel-label { font-size: 11px; color: var(--text2); margin-bottom: 10px; }
+.voice-btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.speed-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.speed-row label { font-size: 12px; color: var(--text2); }
+.speed-row input[type=range] { flex: 1; max-width: 140px; accent-color: var(--accent); }
+.speed-val { font-size: 12px; color: var(--text); min-width: 36px; }
+.voice-status { font-size: 11px; color: var(--text3); margin-top: 8px; min-height: 16px; }
+
+/* Steps */
+.step {
+  border-left: 2px solid var(--accent-bg);
+  padding-left: 12px;
+  margin-bottom: 14px;
+}
+.step:last-of-type { margin-bottom: 0; }
+.step-lbl { font-size: 11px; color: var(--accent); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.02em; }
+.step-txt { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+/* Hint box */
+.hint {
+  background: var(--info-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--info);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+/* Textarea */
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  resize: vertical;
+  min-height: 80px;
+  background: var(--bg);
+  color: var(--text);
+  margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+textarea:focus { outline: none; border-color: var(--accent); }
+
+/* Buttons */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--surface2); }
+.btn:active { transform: scale(0.97); }
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-accent:hover { opacity: 0.88; background: var(--accent); }
+.btn-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: var(--success);
+}
+.btn-playing {
+  background: var(--warn-bg);
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+/* AI response box */
+.ai-box {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.8;
+  margin-top: 14px;
+  white-space: pre-wrap;
+  display: none;
+  border-left: 3px solid var(--accent);
+}
+.ai-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text2);
+  padding: 14px;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  margin-top: 14px;
+  display: none;
+}
+.dots span {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.2s infinite;
+  margin: 0 2px;
+}
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+/* fluency hidden */
+.en-hidden { visibility: hidden; }
+
+/* Today point */
+.point-box {
+  background: var(--accent2-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--accent2);
+  line-height: 1.7;
+  margin-bottom: 14px;
+  border-left: 3px solid var(--accent2);
+}
+
+/* New sentence form */
+.new-sentence-area { display: none; }
+.new-sentence-area.open { display: block; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- API Key Screen -->
+<div id="apiscreen">
+  <div class="api-card">
+    <h1>🌿 英語脳トレーニング</h1>
+    <p>川崎あゆみ氏の第2言語習得論メソッドに基づいた英語学習アプリです。<br>はじめにAnthropicのAPIキーを入力してください。</p>
+    <input type="password" id="apikey-input" placeholder="sk-ant-..." autocomplete="off">
+    <div class="api-note">
+      🔒 APIキーはこのブラウザのメモリにのみ保存され、外部に送信されることはありません。
+    </div>
+    <div class="btn-row" style="margin-top:0">
+      <button class="btn btn-accent" style="width:100%;justify-content:center" onclick="startApp()">アプリを起動する</button>
+    </div>
+    <div id="api-error" style="font-size:12px;color:var(--danger);margin-top:10px;display:none">APIキーを入力してください。</div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="appscreen">
+  <div class="topbar">
+    <span class="topbar-title">🌿 英語脳トレーニング</span>
+    <div class="topbar-right">
+      <span class="topbar-day" id="day-badge">Day 1</span>
+      <button class="btn" style="font-size:12px;padding:5px 10px" onclick="showNewSentencePanel()">＋ 新しい英文</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- New sentence panel -->
+    <div class="card new-sentence-area" id="new-sentence-panel">
+      <div class="card-label">新しい英文を生成</div>
+      <div class="hint">AIが中学低学年レベルの英文を1つ生成します。生成後、その英文で学習が始まります。</div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="btn btn-accent" onclick="generateNewSentence()">✨ 英文を生成する</button>
+        <button class="btn" onclick="closeNewSentencePanel()">キャンセル</button>
+      </div>
+      <div class="ai-loading" id="gen-loading"><div class="dots"><span></span><span></span><span></span></div>英文を生成中...</div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <span class="progress-label" id="progress-label">0 / 4 完了</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" id="tab-0" onclick="switchTab(0)"><span class="tab-icon">🎧</span>インプット</div>
+      <div class="tab" id="tab-1" onclick="switchTab(1)"><span class="tab-icon">✏️</span>アウトプット</div>
+      <div class="tab" id="tab-2" onclick="switchTab(2)"><span class="tab-icon">💡</span>知識</div>
+      <div class="tab" id="tab-3" onclick="switchTab(3)"><span class="tab-icon">🔁</span>スラスラ</div>
+    </div>
+
+    <!-- Panel 0: Input -->
+    <div id="panel-0">
+      <div class="card">
+        <div class="card-label">今日の英文</div>
+        <div class="sentence-en" id="en-0">I drink coffee every morning.</div>
+        <div class="voice-panel">
+          <div class="voice-panel-label">🔊 ネイティブ音声で聴く</div>
+          <div class="voice-btns">
+            <button class="btn" id="vbtn-0" onclick="playVoice('en-0','vbtn-0','spd-0')">▶ 再生</button>
+            <button class="btn" onclick="stopVoice()">■ 停止</button>
+          </div>
+          <div class="speed-row">
+            <label>速度</label>
+            <input type="range" min="0.5" max="1.2" step="0.05" value="0.85" id="spd-0" oninput="document.getElementById('sv-0').textContent=parseFloat(this.value).toFixed(2)+'x'">
+            <span class="speed-val" id="sv-0">0.85x</span>
+          </div>
+          <div class="voice-status" id="vstatus-0">音声を準備中...</div>
+        </div>
+        <div class="sentence-jp blurred" id="jp-0" onclick="revealJp()">私は毎朝コーヒーを飲みます。</div>
+        <div class="reveal-hint" id="reveal-hint">👆 タップして日本語訳を確認</div>
+        <div class="svo-grid">
+          <div class="svo-item"><span class="svo-lbl">誰が（S）</span><span class="svo-val" id="svo-s">I</span></div>
+          <div class="svo-item"><span class="svo-lbl">どうする（V）</span><span class="svo-val" id="svo-v">drink</span></div>
+          <div class="svo-item"><span class="svo-lbl">何を（O）</span><span class="svo-val" id="svo-o">coffee</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">インプット練習（15分）</div>
+        <div class="step"><div class="step-lbl">① まず英文を見て意味を推測</div><div class="step-txt">日本語訳を見ずに、英語のまま意味をイメージしましょう。</div></div>
+        <div class="step"><div class="step-lbl">② 音声を聴いて発音とリズムを体に入れる</div><div class="step-txt">再生ボタンで何度も聴き、口の中で小さく真似してみましょう。</div></div>
+        <div class="step"><div class="step-lbl">③ 日本語訳をタップして答え合わせ</div><div class="step-txt">SVOの構造（誰が・どうする・何を）を意識しながら再読します。</div></div>
+        <div class="btn-row">
+          <button class="btn btn-success" onclick="markDone(0)">✓ 完了</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 1: Output -->
+    <div id="panel-1" style="display:none">
+      <div class="card">
+        <div class="card-label">今日の英文（確認）</div>
+        <div class="sentence-en" id="en-1">I drink coffee every morning.</div>
+        <div class="voice-panel">
+          <div class="voice-panel-label">🔊 もう一度音声で確認</div>
+          <div class="voice-btns">
+            <button class="btn" id="vbtn-1" onclick="playVoice('en-1','vbtn-1','spd-0')">▶ 再生</button>
+            <button class="btn" onclick="stopVoice()">■ 停止</button>
+          </div>
+          <div class="voice-status" id="vstatus-1"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">アウトプット練習（15分）</div>
+        <div class="hint">この英文を参考に、<strong>あなた自身のこと</strong>を英語で1文書いてみましょう。</div>
+        <textarea id="user-out" placeholder="英文をここに書いてください..."></textarea>
+        <div class="btn-row" style="margin-top:0">
+          <button class="btn btn-accent" onclick="getAIFeedback()">✨ AIに添削してもらう</button>
+          <button class="btn btn-success" onclick="markDone(1)">✓ 完了</button>
+        </div>
+        <div class="ai-loading" id="out-loading"><div class="dots"><span></span><span></span><span></span></div>添削中...</div>
+        <div class="ai-box" id="out-ai"></div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Knowledge -->
+    <div id="panel-2" style="display:none">
+      <div class="card">
+        <div class="card-label">今日の英文（確認）</div>
+        <div class="sentence-en" id="en-2">I drink coffee every morning.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">知識パート（15分）</div>
+        <div class="point-box" id="today-point">「drink」は基本動詞の1つ。現在形で習慣を表します。「every morning（毎朝）」のような時間表現と一緒に使うのが自然です。</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.7">わからなかった点や気になる表現があれば、AIに質問しましょう。</div>
+        <textarea id="kn-q" placeholder="気になった点を書いてください..."></textarea>
+        <div class="btn-row" style="margin-top:0">
+          <button class="btn btn-accent" onclick="askKnowledge()">💬 Claudeに質問する</button>
+          <button class="btn btn-success" onclick="markDone(2)">✓ 完了</button>
+        </div>
+        <div class="ai-loading" id="kn-loading"><div class="dots"><span></span><span></span><span></span></div>考え中...</div>
+        <div class="ai-box" id="kn-ai"></div>
+      </div>
+    </div>
+
+    <!-- Panel 3: Fluency -->
+    <div id="panel-3" style="display:none">
+      <div class="card">
+        <div class="card-label">今日の英文（最終確認）</div>
+        <div class="sentence-en" id="en-3">I drink coffee every morning.</div>
+        <div class="sentence-jp" id="jp-3">私は毎朝コーヒーを飲みます。</div>
+        <div class="voice-panel" style="margin-top:14px">
+          <div class="voice-panel-label">🔊 シャドーイング練習</div>
+          <div class="voice-btns">
+            <button class="btn" id="vbtn-3" onclick="playVoice('en-3','vbtn-3','spd-3')">▶ 再生</button>
+            <button class="btn" onclick="stopVoice()">■ 停止</button>
+            <button class="btn" id="rep-btn" onclick="startRepeat()">🔁 3回繰り返す</button>
+          </div>
+          <div class="speed-row">
+            <label>速度</label>
+            <input type="range" min="0.5" max="1.2" step="0.05" value="0.85" id="spd-3" oninput="document.getElementById('sv-3').textContent=parseFloat(this.value).toFixed(2)+'x'">
+            <span class="speed-val" id="sv-3">0.85x</span>
+          </div>
+          <div class="voice-status" id="vstatus-3"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">スラスラ練習（15分）</div>
+        <div class="step"><div class="step-lbl">① 音声を聴いてシャドーイング</div><div class="step-txt">音声のすぐ後に続いて声に出します。3回繰り返しが効果的です。</div></div>
+        <div class="step"><div class="step-lbl">② 日本語→英語（瞬時変換）</div><div class="step-txt">日本語訳だけを見て、英語がパッと口から出るか試します。</div></div>
+        <div class="step"><div class="step-lbl">③ 英文を隠してチャレンジ</div><div class="step-txt">英文を隠してスラスラ言えれば「自動化」に近づいています！</div></div>
+        <div class="btn-row">
+          <button class="btn" id="hide-btn" onclick="toggleHide()">🙈 英文を隠す</button>
+          <button class="btn btn-success" onclick="markDone(3)">✓ 今日の学習を完了する</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let API_KEY = '';
+const ENDPOINT = 'https://api.anthropic.com/v1/messages';
+let doneState = [false,false,false,false];
+let jpRevealed = false;
+let enHidden = false;
+let repTimer = null;
+let repCount = 0;
+let activeBtn = null;
+let synth = window.speechSynthesis;
+let voices = [];
+let dayCount = 1;
+
+let currentData = {
+  en: "I drink coffee every morning.",
+  jp: "私は毎朝コーヒーを飲みます。",
+  s: "I", v: "drink", o: "coffee",
+  point: "「drink」は基本動詞の1つ。現在形で習慣を表します。「every morning（毎朝）」のような時間表現と一緒に使うのが自然です。"
+};
+
+// === API Key ===
+function startApp() {
+  const key = document.getElementById('apikey-input').value.trim();
+  if (!key || !key.startsWith('sk-')) {
+    document.getElementById('api-error').style.display = 'block';
+    return;
+  }
+  API_KEY = key;
+  document.getElementById('apiscreen').style.display = 'none';
+  document.getElementById('appscreen').style.display = 'block';
+  initVoices();
+}
+
+// === Voice ===
+function initVoices() {
+  voices = synth.getVoices();
+  updateVoiceStatus();
+  synth.onvoiceschanged = () => {
+    voices = synth.getVoices();
+    updateVoiceStatus();
+  };
+}
+
+function updateVoiceStatus() {
+  const v = pickVoice();
+  const el = document.getElementById('vstatus-0');
+  if (el) el.textContent = v ? '✓ 音声準備完了：' + v.name : '⚠ 英語音声が見つかりません';
+}
+
+function pickVoice() {
+  const prefs = ['Samantha','Alex','Karen','Moira','Tessa','Victoria','Google US English','Microsoft Zira','Microsoft David'];
+  const enUS = voices.filter(v => v.lang === 'en-US' || v.lang === 'en_US');
+  for (const p of prefs) {
+    const f = enUS.find(v => v.name.includes(p)) || voices.find(v => v.name.includes(p) && v.lang.startsWith('en'));
+    if (f) return f;
+  }
+  return enUS[0] || voices.find(v => v.lang.startsWith('en')) || null;
+}
+
+function playVoice(elId, btnId, spdId) {
+  stopVoice();
+  const text = document.getElementById(elId).textContent.trim();
+  const spdEl = document.getElementById(spdId);
+  const rate = spdEl ? parseFloat(spdEl.value) : 0.85;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = rate;
+  u.pitch = 1.0;
+  const v = pickVoice();
+  if (v) u.voice = v;
+  activeBtn = btnId;
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.className = 'btn btn-playing'; btn.textContent = '🔊 再生中'; }
+  const vsEl = getVstatusEl(btnId);
+  if (vsEl && v) vsEl.textContent = '使用音声：' + v.name;
+  u.onend = () => resetBtn(btnId);
+  u.onerror = (e) => {
+    resetBtn(btnId);
+    const s = getVstatusEl(btnId);
+    if (s) s.textContent = '⚠ 音声エラー：' + (e.error || '不明');
+  };
+  synth.speak(u);
+}
+
+function getVstatusEl(btnId) {
+  const map = {'vbtn-0':'vstatus-0','vbtn-1':'vstatus-1','vbtn-3':'vstatus-3'};
+  return document.getElementById(map[btnId]);
+}
+
+function resetBtn(btnId) {
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.className = 'btn'; btn.textContent = '▶ 再生'; }
+  activeBtn = null;
+}
+
+function stopVoice() {
+  synth.cancel();
+  if (repTimer) { clearTimeout(repTimer); repTimer = null; }
+  repCount = 0;
+  if (activeBtn) resetBtn(activeBtn);
+  const rb = document.getElementById('rep-btn');
+  if (rb) rb.textContent = '🔁 3回繰り返す';
+}
+
+function startRepeat() {
+  stopVoice();
+  repCount = 0;
+  function next() {
+    if (repCount >= 3) { stopVoice(); return; }
+    repCount++;
+    const rb = document.getElementById('rep-btn');
+    if (rb) rb.textContent = '🔁 ' + repCount + '/3 再生中';
+    const text = document.getElementById('en-3').textContent.trim();
+    const rate = parseFloat(document.getElementById('spd-3').value) || 0.85;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = rate; u.pitch = 1.0;
+    const v = pickVoice(); if (v) u.voice = v;
+    u.onend = () => { repTimer = setTimeout(next, 700); };
+    u.onerror = () => stopVoice();
+    synth.speak(u);
+  }
+  next();
+}
+
+// === Tabs / Progress ===
+function switchTab(i) {
+  [0,1,2,3].forEach(j => {
+    document.getElementById('panel-' + j).style.display = j === i ? 'block' : 'none';
+    const t = document.getElementById('tab-' + j);
+    t.className = doneState[j] ? 'tab done' : (j === i ? 'tab active' : 'tab');
+  });
+}
+
+function markDone(i) {
+  doneState[i] = true;
+  const count = doneState.filter(Boolean).length;
+  document.getElementById('progress-fill').style.width = (count * 25) + '%';
+  document.getElementById('progress-label').textContent = count + ' / 4 完了';
+  document.getElementById('tab-' + i).className = 'tab done';
+  if (i < 3) { setTimeout(() => switchTab(i + 1), 400); }
+  else { setTimeout(() => { if (confirm('🎉 今日の学習完了！お疲れ様でした。\n\n明日の学習を開始しますか？')) { nextDay(); } }, 300); }
+}
+
+function nextDay() {
+  dayCount++;
+  document.getElementById('day-badge').textContent = 'Day ' + dayCount;
+  doneState = [false, false, false, false];
+  jpRevealed = false; enHidden = false;
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-label').textContent = '0 / 4 完了';
+  document.getElementById('jp-0').classList.add('blurred');
+  document.getElementById('reveal-hint').style.display = '';
+  document.getElementById('en-3').className = 'sentence-en';
+  document.getElementById('hide-btn').textContent = '🙈 英文を隠す';
+  document.getElementById('out-ai').style.display = 'none';
+  document.getElementById('kn-ai').style.display = 'none';
+  document.getElementById('user-out').value = '';
+  document.getElementById('kn-q').value = '';
+  [0,1,2,3].forEach(j => document.getElementById('tab-' + j).className = 'tab');
+  document.getElementById('tab-0').className = 'tab active';
+  [0,1,2,3].forEach(j => document.getElementById('panel-' + j).style.display = j === 0 ? 'block' : 'none');
+  showNewSentencePanel();
+}
+
+// === Reveal JP ===
+function revealJp() {
+  if (jpRevealed) return;
+  jpRevealed = true;
+  document.getElementById('jp-0').classList.remove('blurred');
+  document.getElementById('reveal-hint').style.display = 'none';
+}
+
+// === Hide EN ===
+function toggleHide() {
+  enHidden = !enHidden;
+  const el = document.getElementById('en-3');
+  const btn = document.getElementById('hide-btn');
+  el.className = 'sentence-en' + (enHidden ? ' en-hidden' : '');
+  btn.textContent = enHidden ? '👁 英文を表示する' : '🙈 英文を隠す';
+}
+
+// === New Sentence ===
+function showNewSentencePanel() {
+  document.getElementById('new-sentence-panel').classList.add('open');
+}
+function closeNewSentencePanel() {
+  document.getElementById('new-sentence-panel').classList.remove('open');
+}
+
+async function generateNewSentence() {
+  const loadEl = document.getElementById('gen-loading');
+  loadEl.style.display = 'flex';
+  try {
+    const res = await callClaude(
+      `川崎あゆみ氏の第2言語習得論メソッドに基づいて、中学低学年レベル（単語の98%が理解できる）の短い日常英文を1つ作ってください。基本100動詞のうちの1つを使ってください。
+
+以下のJSON形式のみで返答してください（他の文章は一切不要）：
+{"en":"英文","jp":"日本語訳","s":"主語","v":"動詞","o":"目的語または補語","point":"今日のポイント（1〜2文、日本語）"}`,
+      true
+    );
+    const json = JSON.parse(res);
+    updateSentence(json);
+    closeNewSentencePanel();
+  } catch(e) {
+    alert('英文の生成に失敗しました。もう一度お試しください。\n' + e.message);
+  }
+  loadEl.style.display = 'none';
+}
+
+function updateSentence(d) {
+  currentData = d;
+  ['en-0','en-1','en-2','en-3'].forEach(id => document.getElementById(id).textContent = d.en);
+  ['jp-0','jp-3'].forEach(id => document.getElementById(id).textContent = d.jp);
+  document.getElementById('svo-s').textContent = d.s;
+  document.getElementById('svo-v').textContent = d.v;
+  document.getElementById('svo-o').textContent = d.o;
+  document.getElementById('today-point').textContent = d.point;
+  document.getElementById('jp-0').classList.add('blurred');
+  jpRevealed = false;
+  document.getElementById('reveal-hint').style.display = '';
+}
+
+// === AI Calls ===
+async function callClaude(prompt, jsonMode = false) {
+  const sys = jsonMode
+    ? 'あなたは英語教材を作成するAIです。指定されたJSON形式のみで返答してください。'
+    : 'あなたは英語コーチです。川崎あゆみ氏の第2言語習得論メソッドに基づき、中学低学年レベルの日本語話者の英語学習を支援します。回答は日本語で、短く、温かく、初心者に優しい言葉で。';
+  const res = await fetch(ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-calls': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: sys,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err.error && err.error.message) || 'APIエラー ' + res.status);
+  }
+  const data = await res.json();
+  return data.content.filter(c => c.type === 'text').map(c => c.text).join('');
+}
+
+async function getAIFeedback() {
+  const txt = document.getElementById('user-out').value.trim();
+  if (!txt) { alert('英文を入力してください。'); return; }
+  const loadEl = document.getElementById('out-loading');
+  const boxEl = document.getElementById('out-ai');
+  loadEl.style.display = 'flex';
+  boxEl.style.display = 'none';
+  try {
+    const text = await callClaude(
+      `今日の参考英文：「${currentData.en}」\n学習者が書いた英文：「${txt}」\n\n以下の形式で添削してください：\n✅ 添削後の英文\n👍 良かった点（1つ）\n📝 改善ポイント（1つ、優しく）\n💪 一言励まし`
+    );
+    boxEl.textContent = text;
+    boxEl.style.display = 'block';
+  } catch(e) {
+    boxEl.textContent = '⚠ エラーが発生しました：' + e.message;
+    boxEl.style.display = 'block';
+  }
+  loadEl.style.display = 'none';
+}
+
+async function askKnowledge() {
+  const q = document.getElementById('kn-q').value.trim();
+  if (!q) { alert('質問を入力してください。'); return; }
+  const loadEl = document.getElementById('kn-loading');
+  const boxEl = document.getElementById('kn-ai');
+  loadEl.style.display = 'flex';
+  boxEl.style.display = 'none';
+  try {
+    const text = await callClaude(
+      `今日の英文：「${currentData.en}」\n質問：${q}\n\nイメージで理解できるよう、具体例を交えて短く答えてください。難しい文法用語は避けてください。`
+    );
+    boxEl.textContent = text;
+    boxEl.style.display = 'block';
+  } catch(e) {
+    boxEl.textContent = '⚠ エラーが発生しました：' + e.message;
+    boxEl.style.display = 'block';
+  }
+  loadEl.style.display = 'none';
+}
+
+// Enter key on API input
+document.getElementById('apikey-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startApp();
+});
+</script>
+</body>
+</html>
